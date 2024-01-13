@@ -6,7 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 // Agrega tu servicio personalizado
-builder.Services.AddScoped<IPeopleService, PeopleService>();
+//builder.Services.AddScoped<IPeopleService, PeopleService>();
+builder.Services.AddKeyedScoped<IPeopleService, PeopleService>("peopleDervices");
 
 // Configura Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();

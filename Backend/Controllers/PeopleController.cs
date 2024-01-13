@@ -14,7 +14,7 @@ namespace Backend.Controllers
         private IPeopleService _peopleService;
 
         // Inyección de dependencias en el constructor
-        public PeopleController(IPeopleService peopleService)
+        public PeopleController([FromKeyedServices("peopleService")]IPeopleService peopleService)
         {
             // Se inyecta la instancia de IPeopleService en lugar de crear una nueva.
             _peopleService = peopleService;
