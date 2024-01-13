@@ -1,0 +1,68 @@
+# .NET
+bin/
+obj/
+
+# Visual Studio Code
+.vscode/
+
+# Visual Studio
+*.user
+*.suo
+*.cache
+*.suo
+*.log
+*.vspscc
+*psess
+*.vshost.*
+
+# Carpeta de dependencias
+*.userosscache
+*.sln.docstates
+
+# Carpeta de configuración de Visual Studio
+.vs/
+_UpgradeReport_Files/
+
+# Carpeta de resultados de compilación
+[Tt]est[Rr]esult*/
+[Bb]in/
+[Dd]ebug/
+[Ii]p/
+[Rr]elease/
+[Ll]og/
+
+
+# Archivos de respaldo de Visual Studio
+[Bb]ackup*/
+[Dd]esignerGeneratedFile.ico
+
+# Carpeta de caché de ReSharper
+_ReSharper*/
+
+# Carpeta de caché de Rider
+.idea/
+
+# Carpeta de caché de Visual Studio Code
+.vscode/
+
+# Carpeta de caché de Rider
+.idea/
+
+# Carpeta de caché de Rider
+.idea/
+
+# Carpeta de caché de Rider
+.idea/
+
+# Carpeta de caché de Rider
+.idea/
+
+# Carpeta de caché de Rider
+.idea/
+
+# Archivo de configuración de Rider
+*.sln.iml
+
+# Archivos temporales
+[Tt]emp/
+[Tt]mp/
