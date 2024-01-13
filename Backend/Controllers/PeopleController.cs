@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Backend.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Backend.Controllers
 {
@@ -7,6 +11,15 @@ namespace Backend.Controllers
     [ApiController]
     public class PeopleController : ControllerBase
     {
+        private IPeopleService _peopleService;
+
+        // Inyección de dependencias en el constructor
+        public PeopleController(IPeopleService peopleService)
+        {
+            // Se inyecta la instancia de IPeopleService en lugar de crear una nueva.
+            _peopleService = peopleService;
+        }
+
         // GET: api/People/all
         [HttpGet("all")]
         public ActionResult<List<People>> GetPeoples()
@@ -50,11 +63,23 @@ namespace Backend.Controllers
                 // y un mensaje descriptivo.
                 return Ok($"No se encontraron personas con el nombre que contenga '{search}'.");
             }
+            else
+            {
+                var firstPerson = filteredPeople.First();
 
-            // Si se encontraron personas, devuelve un ActionResult con un código de estado 200 OK y la lista de personas filtradas.
-            return Ok(filteredPeople);
+                // Verifica si el nombre de la primera persona es válido utilizando el servicio.
+                var isNameValid = _peopleService.Validate(firstPerson);
+
+                if (!isNameValid)
+                {
+                    // Si el nombre no es válido, devuelve un IActionResult con un código de estado 400 Bad Request.
+                    return BadRequest("El nombre de la persona no es válido.");
+                }
+
+                // Si se encontraron personas y el nombre es válido, devuelve un ActionResult con un código de estado 200 OK y la lista de personas filtradas.
+                return Ok(filteredPeople);
+            }
         }
-
     }
 
     // Clase estática que actúa como una fuente de datos ficticia
