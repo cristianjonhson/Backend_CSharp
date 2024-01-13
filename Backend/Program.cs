@@ -1,4 +1,5 @@
 using Backend.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,9 @@ builder.Services.AddControllers();
 //builder.Services.AddScoped<IPeopleService, PeopleService>();
 builder.Services.AddKeyedScoped<IPeopleService, PeopleService>("peopleDervices");
 
+
+//Inyeccion de dependencias de post
+builder.Services.AddScoped<IPostsService, PostsService >();
 // Configura Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
