@@ -9,7 +9,7 @@
 		{
 			"name": "https://localhost:7055/api/Operation?a=14&b=12",
 			"request": {
-				"method": "GET",
+				"method": "DELETE",
 				"header": [],
 				"url": {
 					"raw": "https://localhost:7055/api/Operation?a=14&b=12",
@@ -31,6 +31,35 @@
 							"key": "b",
 							"value": "12"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Controller por Objeto (Class)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"A\": 50,\r\n   \"B\": 30 \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7055/api/Operation",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7055",
+					"path": [
+						"api",
+						"Operation"
 					]
 				}
 			},
