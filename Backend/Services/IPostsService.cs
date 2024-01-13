@@ -1,0 +1,11 @@
+﻿using Backend.DTOs;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace Backend.Services
+{
+    public interface IPostsService
+    {
+        Task<IEnumerable<PostDto>> GetPosts();
+    }
+}
