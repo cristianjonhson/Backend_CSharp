@@ -64,6 +64,39 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Controller usando Repository Ejemplo",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"A\": 50,\r\n   \"B\": 30 \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7055/api/People/all",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7055",
+					"path": [
+						"api",
+						"People",
+						"all"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
