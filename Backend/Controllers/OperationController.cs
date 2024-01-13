@@ -18,10 +18,10 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        public decimal OperationRest(decimal a, decimal b)
+        public decimal OperationRest(Numbers num)
         {
             // Realizamos una operación simple de resta y devolvemos el resultado
-            return a - b;
+            return num.A - num.B;
         }
 
         [HttpPut]
@@ -31,13 +31,18 @@ namespace Backend.Controllers
             return a * b;
         }
 
-
         [HttpDelete]
         public decimal OperationDivide(decimal a, decimal b)
         {
             // Realizamos una operación simple de division y devolvemos el resultado
             return a / b;
         }
+    }
+
+    public class Numbers
+    {
+       public decimal A {  get; set; }
+       public decimal B { get; set; }
     }
 }
 
