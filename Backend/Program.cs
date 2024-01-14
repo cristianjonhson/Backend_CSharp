@@ -18,6 +18,8 @@ builder.Services.AddHttpClient<IPostsService, PostsService>(c =>
     c.BaseAddress = new Uri("https://jsonplaceholder.typicode.com/posts");
 });
 
+
+//EntityFramework
 builder.Services.AddDbContext<StoreContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("StoreConnection"));
