@@ -1,4 +1,6 @@
+using Backend.Models;
 using Backend.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +16,13 @@ builder.Services.AddHttpClient<IPostsService, PostsService>(c =>
 {
     // Configura la URL base para las solicitudes HTTP del servicio de posts
     c.BaseAddress = new Uri("https://jsonplaceholder.typicode.com/posts");
+});
+
+
+//EntityFramework
+builder.Services.AddDbContext<StoreContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("StoreConnection"));
 });
 
 // Agrega servicios al contenedor de dependencias.
