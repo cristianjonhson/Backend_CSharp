@@ -13,6 +13,7 @@ namespace Backend.DTOs
         public string BeerType { get; set; }
 
         public decimal Alcohol { get; set; }
-        public int BrandId { get; set; }
+        
+        public Int64 BrandId { get; set; }
     }
 }
