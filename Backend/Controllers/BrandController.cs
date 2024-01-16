@@ -3,6 +3,7 @@ using Backend.DTOs;
 using Backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 // Especifica la ruta base para las acciones en este controlador
 [Route("api/[controller]")]
@@ -65,5 +66,29 @@ public class BrandController : ControllerBase
 
         // Retorna un resultado Ok con la marca encontrada
         return Ok(brand);
+    }
+
+    // Acción HTTP PUT para actualizar una marca por su ID
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateBrand(long id, BrandUpdateDto brandUpdateDto)
+    {
+        // Busca la marca en la base de datos por su ID
+        var brand = await _storeContext.Brands.FindAsync(id);
+
+        // Si no se encuentra la marca, retorna un resultado NotFound
+        if (brand == null)
+        {
+            return NotFound();
+        }
+
+        // Actualiza los datos de la marca con los proporcionados en el DTO
+        brand.Name = brandUpdateDto.Name;
+        brand.Description = brandUpdateDto.Description;
+
+        // Guarda los cambios en la base de datos
+        await _storeContext.SaveChangesAsync();
+
+        // Retorna un resultado NoContent indicando que la actualización fue exitosa
+        return NoContent();
     }
 }
