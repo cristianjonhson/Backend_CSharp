@@ -112,4 +112,46 @@ public class BeerController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = beer.BeerId }, beerDto);
     }
 
+
+    // Acción HTTP PUT para actualizar una cerveza por su ID
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateBeer(int id, BeerUpdateDto beerUpdateDto)
+    {
+        // Busca la cerveza en la base de datos por su ID
+        var beer = await _storeContext.Beers.FindAsync(id);
+
+        // Si no se encuentra la cerveza, retorna un resultado NotFound
+        if (beer == null)
+        {
+            return NotFound();
+        }
+
+        // Actualiza las propiedades de la cerveza con los datos del DTO
+        beer.BeerName = beerUpdateDto.BeerName;
+        beer.BeerDescription = beerUpdateDto.BeerDescription;
+        beer.BeerType = beerUpdateDto.BeerType;
+        beer.Alcohol = beerUpdateDto.Alcohol;
+
+        // Verifica si BrandId es mayor que cero (o el valor predeterminado para long)
+        if (beerUpdateDto.BrandId > 0)
+        {
+            var brand = await _storeContext.Brands.FindAsync(beerUpdateDto.BrandId);
+
+            // Si la marca no se encuentra, retorna un resultado NotFound
+            if (brand == null)
+            {
+                return NotFound("Brand not found");
+            }
+
+            // Asigna la marca actualizada a la cerveza
+            beer.Brand = brand;
+        }
+
+        // Guarda los cambios en la base de datos
+        await _storeContext.SaveChangesAsync();
+
+        // Retorna un resultado NoContent indicando que la actualización fue exitosa
+        return NoContent();
+    }
+
 }
