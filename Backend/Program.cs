@@ -1,7 +1,9 @@
+using Backend.DTOs;
 using Backend.Models;
 using Backend.Services;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +26,10 @@ builder.Services.AddDbContext<StoreContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("StoreConnection"));
 });
+
+//Validators
+// Registra el BeerInsertValidator como implementación de IValidator<BeerInsertDto>
+builder.Services.AddScoped<IValidator<BeerInsertDto>, BeerInsertValidator>();
 
 // Agrega servicios al contenedor de dependencias.
 builder.Services.AddControllers();
