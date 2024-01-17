@@ -1,8 +1,12 @@
 ﻿// Importa los namespaces necesarios
 using Backend.DTOs;
 using Backend.Models;
+using FluentValidation; // Importa FluentValidation
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 // Especifica la ruta base para las acciones en este controlador
 [Route("api/[controller]")]
@@ -12,10 +16,13 @@ public class BeerController : ControllerBase
     // Almacena el contexto de la base de datos
     private StoreContext _storeContext;
 
-    // Constructor que recibe el contexto de la base de datos mediante inyección de dependencias
-    public BeerController(StoreContext storeContext)
+    private IValidator<BeerInsertDto> _beerInsertValidator; // Instancia del validador
+
+    // Constructor que recibe el contexto de la base de datos y el validador mediante inyección de dependencias
+    public BeerController(StoreContext storeContext, IValidator<BeerInsertDto> beerInsertValidator)
     {
         _storeContext = storeContext;
+        _beerInsertValidator = beerInsertValidator; // Asigna el validador
     }
 
     // Acción HTTP GET para obtener todas las cervezas
@@ -69,9 +76,19 @@ public class BeerController : ControllerBase
         return Ok(beerDto);
     }
 
+    // Acción HTTP POST para agregar una nueva cerveza
     [HttpPost]
     public async Task<ActionResult<BeerDto>> Add(BeerInsertDto beerInsertDto)
     {
+        // Validación usando FluentValidation
+        var validatorResult = await _beerInsertValidator.ValidateAsync(beerInsertDto);
+
+        // Si la validación no es exitosa, retorna un resultado BadRequest con los errores de validación
+        if (!validatorResult.IsValid)
+        {
+            return BadRequest(validatorResult.Errors);
+        }
+
         // Crea una nueva instancia de la clase Beer
         var beer = new Beer()
         {
@@ -111,7 +128,6 @@ public class BeerController : ControllerBase
         // Retorna un resultado CreatedAtAction con el objeto BeerDto y la ruta del método GetById
         return CreatedAtAction(nameof(GetById), new { id = beer.BeerId }, beerDto);
     }
-
 
     // Acción HTTP PUT para actualizar una cerveza por su ID
     [HttpPut("{id}")]
@@ -153,5 +169,4 @@ public class BeerController : ControllerBase
         // Retorna un resultado NoContent indicando que la actualización fue exitosa
         return NoContent();
     }
-
 }
