@@ -10,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Agrega tu servicio personalizado usando AddKeyedScoped para inyección de dependencias
 builder.Services.AddKeyedScoped<IPeopleService, PeopleService>("peopleDervices");
 
+builder.Services.AddScoped<IBeerService, BeerService>();
+
 // Inyección de dependencias para el servicio de posts
 builder.Services.AddScoped<IPostsService, PostsService>();
 
