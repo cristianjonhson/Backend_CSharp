@@ -1,6 +1,7 @@
 ﻿// Importa los namespaces necesarios
 using Backend.DTOs;
 using Backend.Models;
+using Backend.Services;
 using FluentValidation; // Importa FluentValidation
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,13 +17,19 @@ public class BeerController : ControllerBase
     // Almacena el contexto de la base de datos
     private StoreContext _storeContext;
 
-    private IValidator<BeerInsertDto> _beerInsertValidator; // Instancia del validador
+    // Instancia del validador
+    private IValidator<BeerInsertDto> _beerInsertValidator;
+
+    private IBeerService _beerService;
 
     // Constructor que recibe el contexto de la base de datos y el validador mediante inyección de dependencias
-    public BeerController(StoreContext storeContext, IValidator<BeerInsertDto> beerInsertValidator)
+    public BeerController(StoreContext storeContext, 
+        IValidator<BeerInsertDto> beerInsertValidator,
+        IBeerService beerService)
     {
         _storeContext = storeContext;
-        _beerInsertValidator = beerInsertValidator; // Asigna el validador
+        _beerInsertValidator = beerInsertValidator; 
+        _beerService = beerService;
     }
 
     // Acción HTTP GET para obtener todas las cervezas
