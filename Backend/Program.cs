@@ -4,12 +4,15 @@ using Backend.Services;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
-// Agrega tu servicio personalizado usando AddKeyedScoped para inyección de dependencias
+// Agrega tu servicio personalizado usando AddKeyedScoped para inyeccion de dependencias
 builder.Services.AddKeyedScoped<IPeopleService, PeopleService>("peopleDervices");
 
+// Registra el servicio de marcas como implementacion de IBrandService
+builder.Services.AddScoped<IBrandService, BrandService>();
+
+// Registra el servicio de cervezas como implementacion de IBeerService
 builder.Services.AddScoped<IBeerService, BeerService>();
 
 // Inyección de dependencias para el servicio de posts
@@ -22,15 +25,14 @@ builder.Services.AddHttpClient<IPostsService, PostsService>(c =>
     c.BaseAddress = new Uri("https://jsonplaceholder.typicode.com/posts");
 });
 
-
-//EntityFramework
+// Configura EntityFramework con el contexto de la base de datos
 builder.Services.AddDbContext<StoreContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("StoreConnection"));
 });
 
-//Validators
-// Registra el BeerInsertValidator como implementación de IValidator<BeerInsertDto>
+// Validators
+// Registra el BeerInsertValidator como implementacion de IValidator<BeerInsertDto>
 builder.Services.AddScoped<IValidator<BeerInsertDto>, BeerInsertValidator>();
 
 // Agrega servicios al contenedor de dependencias.
@@ -51,14 +53,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Habilita la redirección HTTPS
+// Habilita la redireccion HTTPS
 app.UseHttpsRedirection();
 
-// Habilita la autorización
+// Habilita la autorizacion
 app.UseAuthorization();
 
-// Mapea los controladores de la aplicación
+// Mapea los controladores de la aplicacion
 app.MapControllers();
 
-// Ejecuta la aplicación
+// Ejecuta la aplicacion
 app.Run();
