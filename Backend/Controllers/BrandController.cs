@@ -1,94 +1,68 @@
 ﻿// Importa los namespaces necesarios
 using Backend.DTOs;
-using Backend.Models;
+using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 
 // Especifica la ruta base para las acciones en este controlador
 [Route("api/[controller]")]
 [ApiController]
 public class BrandController : ControllerBase
 {
-    // Almacena el contexto de la base de datos
-    private StoreContext _storeContext;
+    private readonly IBrandService _brandService;
 
-    // Constructor que recibe el contexto de la base de datos mediante inyección de dependencias
-    public BrandController(StoreContext storeContext)
+    // Constructor que recibe el servicio de marcas mediante inyección de dependencias
+    public BrandController(IBrandService brandService)
     {
-        _storeContext = storeContext;
-    }
-
-    // Acción HTTP POST para agregar una nueva marca
-    [HttpPost]
-    public async Task<ActionResult<Brand>> AddBrand(BrandInsertDto brandInsertDto)
-    {
-        // Crea una nueva instancia de Brand usando los datos del DTO
-        var brand = new Brand
-        {
-            Name = brandInsertDto.Name,
-            Description = brandInsertDto.Description
-        };
-
-        // Agrega la nueva marca al contexto de la base de datos
-        await _storeContext.Brands.AddAsync(brand);
-
-        // Guarda los cambios en la base de datos
-        await _storeContext.SaveChangesAsync();
-
-        // Retorna un resultado CreatedAtAction con la nueva marca
-        return CreatedAtAction(nameof(GetBrandById), new { id = brand.BrandId }, brand);
+        _brandService = brandService;
     }
 
     // Acción HTTP GET para obtener todas las marcas
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Brand>>> GetAllBrands()
+    public async Task<ActionResult<IEnumerable<BrandDto>>> GetAllBrands()
     {
-        // Obtiene todas las marcas de la base de datos
-        var brands = await _storeContext.Brands.ToListAsync();
+        // Delega la responsabilidad al servicio de marcas
+        var brandsDto = await _brandService.GetAllBrands();
 
         // Retorna un resultado Ok con la lista de marcas
-        return Ok(brands);
+        return Ok(brandsDto);
+    }
+
+    // Acción HTTP POST para agregar una nueva marca
+    [HttpPost]
+    public async Task<ActionResult<BrandDto>> AddBrand(BrandInsertDto brandInsertDto)
+    {
+        // Delega la responsabilidad al servicio de marcas
+        var result = await _brandService.AddBrand(brandInsertDto);
+
+        // Retorna un resultado CreatedAtAction con la nueva marca
+        return CreatedAtAction(nameof(GetBrandById), new { id = result.BrandId }, result);
     }
 
     // Acción HTTP GET para obtener una marca por su ID
     [HttpGet("{id}")]
-    public async Task<ActionResult<Brand>> GetBrandById(long id)
+    public async Task<ActionResult<BrandDto>> GetBrandById(long id)
     {
-        // Busca la marca en la base de datos por su ID
-        var brand = await _storeContext.Brands.FindAsync(id);
+        // Delega la responsabilidad al servicio de marcas
+        var brandDto = await _brandService.GetBrandById(id);
 
         // Si no se encuentra la marca, retorna un resultado NotFound
-        if (brand == null)
+        if (brandDto == null)
         {
             return NotFound();
         }
 
         // Retorna un resultado Ok con la marca encontrada
-        return Ok(brand);
+        return Ok(brandDto);
     }
 
     // Acción HTTP PUT para actualizar una marca por su ID
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateBrand(long id, BrandUpdateDto brandUpdateDto)
     {
-        // Busca la marca en la base de datos por su ID
-        var brand = await _storeContext.Brands.FindAsync(id);
+        // Delega la responsabilidad al servicio de marcas
+        var result = await _brandService.UpdateBrand(id, brandUpdateDto);
 
-        // Si no se encuentra la marca, retorna un resultado NotFound
-        if (brand == null)
-        {
-            return NotFound();
-        }
-
-        // Actualiza los datos de la marca con los proporcionados en el DTO
-        brand.Name = brandUpdateDto.Name;
-        brand.Description = brandUpdateDto.Description;
-
-        // Guarda los cambios en la base de datos
-        await _storeContext.SaveChangesAsync();
-
-        // Retorna un resultado NoContent indicando que la actualización fue exitosa
-        return NoContent();
+        // Retorna el resultado proporcionado por el servicio
+        return result;
     }
 }
