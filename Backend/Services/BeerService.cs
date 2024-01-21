@@ -1,143 +1,79 @@
-﻿// Servicio que implementa operaciones CRUD para las cervezas.
-using Backend.DTOs;
+﻿using Backend.DTOs;
 using Backend.Models;
+using Backend.Repository;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
-public class BeerService : ICommonService<BeerDto,BeerInsertDto,BeerUpdateDto>
+public class BeerService : ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>
 {
-    private readonly StoreContext _storeContext;
+    private readonly IBeerRepository _beerRepository;
 
-    // Constructor que recibe el contexto de la base de datos mediante inyección de dependencias.
-    public BeerService(StoreContext storeContext)
+    public BeerService(IBeerRepository beerRepository)
     {
-        _storeContext = storeContext;
+        _beerRepository = beerRepository;
     }
 
-    // Implementación de la operación Get.
     public async Task<IEnumerable<BeerDto>> Get()
     {
-        // Realiza una consulta para seleccionar todas las cervezas y proyecta los resultados en BeerDto.
-        var beerDtos = await _storeContext.Beers
-            .Select(x => new BeerDto
-            {
-                BeerId = x.BeerId,
-                BeerDescription = x.BeerDescription,
-                BeerName = x.BeerName,
-                BeerType = x.BeerType,
-                Alcohol = x.Alcohol,
-                BrandId = x.Brand.BrandId
-            })
-            .ToListAsync();
-
-        // Retorna la lista de BeerDto.
-        return beerDtos;
+        var beerEntities = await _beerRepository.GetAll();
+        return beerEntities.Select(MapToDto);
     }
 
-    // Implementación de la operación GetById.
     public async Task<BeerDto> GetById(int id)
     {
-        // Incluye la propiedad de navegación Brand al cargar la cerveza.
-        var beer = await _storeContext.Beers
-            .Include(b => b.Brand)
-            .FirstOrDefaultAsync(b => b.BeerId == id);
-
-        // Si no se encuentra la cerveza, retorna null.
-        if (beer == null)
-        {
-            return null;
-        }
-
-        // Retorna un objeto BeerDto basado en la cerveza encontrada.
-        return new BeerDto()
-        {
-            BeerId = beer.BeerId,
-            BeerDescription = beer.BeerDescription,
-            BeerName = beer.BeerName,
-            BeerType = beer.BeerType,
-            Alcohol = beer.Alcohol,
-            BrandId = beer.Brand != null ? beer.Brand.BrandId : 0
-        };
+        var beerEntity = await _beerRepository.GetById(id);
+        return beerEntity != null ? MapToDto(beerEntity) : null;
     }
 
-    // Implementación de la operación Add.
     public async Task<BeerDto> Add(BeerInsertDto beerInsertDto)
     {
-        // Crea una nueva instancia de la clase Beer.
-        var beer = new Beer()
-        {
-            BeerDescription = beerInsertDto.BeerDescription,
-            BeerName = beerInsertDto.BeerName,
-            BeerType = beerInsertDto.BeerType,
-            Alcohol = beerInsertDto.Alcohol,
-        };
+        var beerEntity = MapToEntity(beerInsertDto);
+        await _beerRepository.Add(beerEntity);
+        return MapToDto(beerEntity);
+    }
 
-        // Busca la marca por su ID en la base de datos.
-        var brand = await _storeContext.Brands.FindAsync(beerInsertDto.BrandId);
+    public async Task<IActionResult> Update(int id, BeerUpdateDto beerUpdateDto)
+    {
+        var beerEntity = MapToEntity(beerUpdateDto);
+        return await _beerRepository.Update(id, beerEntity);
+    }
 
-        // Si la marca no se encuentra, retorna null.
-        if (brand == null)
-        {
-            return null;
-        }
-
-        // Asigna la marca a la cerveza.
-        beer.Brand = brand;
-
-        // Agrega la cerveza al contexto y guarda los cambios en la base de datos.
-        await _storeContext.Beers.AddAsync(beer);
-        await _storeContext.SaveChangesAsync();
-
-        // Retorna un objeto BeerDto basado en la cerveza creada.
+    // Método para mapear una entidad Beer a un DTO BeerDto
+    private BeerDto MapToDto(Beer beerEntity)
+    {
         return new BeerDto
         {
-            BeerId = beer.BeerId,
-            BeerDescription = beer.BeerDescription,
-            BeerName = beer.BeerName,
-            BeerType = beer.BeerType,
-            Alcohol = beer.Alcohol,
-            BrandId = beer.Brand.BrandId
+            BeerId = beerEntity.BeerId,
+            BeerName = beerEntity.BeerName,
+            BeerDescription = beerEntity.BeerDescription,
+            BeerType = beerEntity.BeerType,
+            Alcohol = beerEntity.Alcohol,
+            BrandId = beerEntity.Brand != null ? beerEntity.Brand.BrandId : 0
         };
     }
 
-    // Implementación de la operación Update.
-    public async Task<IActionResult> Update(int id, BeerUpdateDto beerUpdateDto)
+    // Método para mapear un DTO BeerInsertDto a una entidad Beer
+    private Beer MapToEntity(BeerInsertDto beerInsertDto)
     {
-        // Busca la cerveza en la base de datos por su ID.
-        var beer = await _storeContext.Beers.FindAsync(id);
-
-        // Si no se encuentra la cerveza, retorna un resultado NotFound.
-        if (beer == null)
+        return new Beer
         {
-            return new NotFoundResult();
-        }
+            BeerName = beerInsertDto.BeerName,
+            BeerDescription = beerInsertDto.BeerDescription,
+            BeerType = beerInsertDto.BeerType,
+            Alcohol = beerInsertDto.Alcohol,
+            Brand = beerInsertDto.BrandId // Puedes validar o manejar la marca según tus necesidades
+        };
+    }
 
-        // Actualiza las propiedades de la cerveza con los datos del DTO.
-        beer.BeerName = beerUpdateDto.BeerName;
-        beer.BeerDescription = beerUpdateDto.BeerDescription;
-        beer.BeerType = beerUpdateDto.BeerType;
-        beer.Alcohol = beerUpdateDto.Alcohol;
-
-        // Verifica si BrandId es mayor que cero.
-        if (beerUpdateDto.BrandId > 0)
+    // Método para mapear un DTO BeerUpdateDto a una entidad Beer
+    private Beer MapToEntity(BeerUpdateDto beerUpdateDto)
+    {
+        return new Beer
         {
-            // Busca la marca por su ID en la base de datos.
-            var brand = await _storeContext.Brands.FindAsync(beerUpdateDto.BrandId);
-
-            // Si la marca no se encuentra, retorna un resultado NotFound.
-            if (brand == null)
-            {
-                return new NotFoundObjectResult("Marca no fue encontrada");
-            }
-
-            // Asigna la marca actualizada a la cerveza.
-            beer.Brand = brand;
-        }
-
-        // Guarda los cambios en la base de datos.
-        await _storeContext.SaveChangesAsync();
-
-        // Retorna un resultado NoContent indicando que la actualización fue exitosa.
-        return new NoContentResult();
+            BeerName = beerUpdateDto.BeerName ?? string.Empty,
+            BeerDescription = beerUpdateDto.BeerDescription ?? string.Empty,
+            BeerType = beerUpdateDto.BeerType ?? string.Empty,
+            Alcohol = beerUpdateDto.Alcohol,
+            BrandId = beerUpdateDto.BrandId // Puedes validar o manejar la marca según tus necesidades
+        };
     }
 }

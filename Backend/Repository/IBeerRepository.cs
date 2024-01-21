@@ -2,11 +2,11 @@
 
 namespace Backend.Repository
 {
-    public interface IRepository<TEntity>
+    public interface IBeerRepository<TEntity>
     {
         Task<IEnumerable<TEntity>> GetAll();
         // Obtener un elemento por su ID.
-        Task<TEntity> GetById(int id);
+        Task<TEntity?> GetById(int id);
 
         // Agregar un nuevo elemento a la entidad.
         Task<TEntity> Add(TEntity entity);

@@ -1,33 +1,57 @@
 ﻿using Backend.Models;
+using Backend.Repository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
-namespace Backend.Repository
+public class BeerRepository : IBeerRepository<Beer>
 {
-    public class BeerRepository : IRepository<Beer>
+    private readonly StoreContext _storeContext;
+
+    public BeerRepository(StoreContext storeContext)
     {
-        public Task<Beer> Add(Beer entity)
+        _storeContext = storeContext;
+    }
+
+    public async Task<Beer> Add(Beer entity)
+    {
+        _storeContext.Beers.Add(entity);
+        await _storeContext.SaveChangesAsync();
+        return entity;
+    }
+
+    public async Task<IEnumerable<Beer>> GetAll()
+    {
+        return await _storeContext.Beers.ToListAsync();
+    }
+
+    public async Task<Beer?> GetById(int id)
+    {
+        return await _storeContext.Beers.FindAsync(id);
+    }
+
+    public async Task Save()
+    {
+        await _storeContext.SaveChangesAsync();
+    }
+
+    public async Task<IActionResult> Update(int id, Beer entity)
+    {
+        var existingBeer = await _storeContext.Beers.FindAsync(id);
+
+        if (existingBeer == null)
         {
-            throw new NotImplementedException();
+            return new NotFoundResult();
         }
 
-        public Task<IEnumerable<Beer>> GetAll()
-        {
-            throw new NotImplementedException();
-        }
+        // Actualiza las propiedades de la cerveza con los datos de la entidad
+        existingBeer.BeerName = entity.BeerName;
+        existingBeer.BeerDescription = entity.BeerDescription;
+        existingBeer.BeerType = entity.BeerType;
+        existingBeer.Alcohol = entity.Alcohol;
+        existingBeer.Brand = entity.Brand;
 
-        public Task<Beer> GetById(int id)
-        {
-            throw new NotImplementedException();
-        }
+        await _storeContext.SaveChangesAsync();
 
-        public Task Save()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IActionResult> Update(int id, Beer entity)
-        {
-            throw new NotImplementedException();
-        }
+        return new NoContentResult();
     }
 }
