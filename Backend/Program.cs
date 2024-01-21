@@ -12,7 +12,7 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnC
 
 //Repository
 
-builder.Services.AddScoped<IRepository<Beer>,BeerRepository>();
+builder.Services.AddScoped<IBeerRepository<Beer>,BeerRepository>();
 
 
 // Agrega el contexto de la base de datos usando Entity Framework Core
