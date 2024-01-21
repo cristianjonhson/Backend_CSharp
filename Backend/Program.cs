@@ -6,16 +6,28 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Agrega tu servicio personalizado usando AddKeyedScoped para inyeccion de dependencias
-builder.Services.AddKeyedScoped<IPeopleService, PeopleService>("peopleDervices");
+// Configuración de la aplicación
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+// Agrega el contexto de la base de datos usando Entity Framework Core
+builder.Services.AddDbContext<StoreContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("StoreConnection"));
+});
 
 // Registra el servicio de marcas como implementacion de IBrandService
 builder.Services.AddScoped<IBrandService, BrandService>();
 
-// Registra el servicio de cervezas como implementacion de IBeerService
-builder.Services.AddScoped<IBeerService, BeerService>();
+// Registra el servicio de cervezas como implementacion de ICommonService
+builder.Services.AddKeyedScoped<ICommonService<BeerDto,BeerInsertDto,BeerUpdateDto>, BeerService>("beerService");
 
-// Inyección de dependencias para el servicio de posts
+// Agrega servicios al contenedor de dependencias.
+builder.Services.AddControllers();
+
+// Configura FluentValidation y registra el BeerInsertValidator como implementacion de IValidator<BeerInsertDto>
+builder.Services.AddScoped<IValidator<BeerInsertDto>, BeerInsertValidator>();
+
+// Configuración y registro del servicio de posts
 builder.Services.AddScoped<IPostsService, PostsService>();
 
 // Configura y agrega un cliente HTTP para el servicio de posts
@@ -25,42 +37,27 @@ builder.Services.AddHttpClient<IPostsService, PostsService>(c =>
     c.BaseAddress = new Uri("https://jsonplaceholder.typicode.com/posts");
 });
 
-// Configura EntityFramework con el contexto de la base de datos
-builder.Services.AddDbContext<StoreContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("StoreConnection"));
-});
-
-// Validators
-// Registra el BeerInsertValidator como implementacion de IValidator<BeerInsertDto>
-builder.Services.AddScoped<IValidator<BeerInsertDto>, BeerInsertValidator>();
-
-// Agrega servicios al contenedor de dependencias.
-builder.Services.AddControllers();
-
-// Configura Swagger/OpenAPI
+// Configura y agrega Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure el pipeline de solicitud HTTP.
-
-// Habilita Swagger y SwaggerUI en el entorno de desarrollo
+// Configura el middleware de Swagger y SwaggerUI en el entorno de desarrollo
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Habilita la redireccion HTTPS
+// Configura el middleware para redireccionar a HTTPS
 app.UseHttpsRedirection();
 
-// Habilita la autorizacion
+// Configura el middleware de autorización
 app.UseAuthorization();
 
-// Mapea los controladores de la aplicacion
+// Configura el middleware para mapear los controladores de la aplicación
 app.MapControllers();
 
-// Ejecuta la aplicacion
+// Ejecuta la aplicación
 app.Run();
