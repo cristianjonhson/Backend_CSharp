@@ -18,6 +18,6 @@ namespace Backend.Services
 
         // Método para actualizar los detalles de una cerveza existente por su ID
         // Recibe el ID de la cerveza a actualizar y un objeto BeerUpdateDto con los nuevos detalles
-        Task<BeerDto> UpdateBeer(int id, BeerUpdateDto beerUpdateDto);
+        Task<IActionResult> UpdateBeer(int id, BeerUpdateDto beerUpdateDto);
     }
 }
