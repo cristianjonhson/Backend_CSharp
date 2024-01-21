@@ -1,5 +1,6 @@
 using Backend.DTOs;
 using Backend.Models;
+using Backend.Repository;
 using Backend.Services;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configuración de la aplicación
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+//Repository
+
+builder.Services.AddScoped<IRepository<Beer>,BeerRepository>();
+
 
 // Agrega el contexto de la base de datos usando Entity Framework Core
 builder.Services.AddDbContext<StoreContext>(options =>
