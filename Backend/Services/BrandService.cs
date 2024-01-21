@@ -1,44 +1,36 @@
-﻿// Importa los namespaces necesarios
-using Backend.DTOs;
+﻿using Backend.DTOs;
 using Backend.Models;
+using Backend.Repository;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Backend.Services
 {
     public class BrandService : IBrandService
     {
-        private readonly StoreContext _storeContext;
+        private readonly IBrandRepository<Brand> _brandRepository;
 
-        // Constructor que recibe el contexto de la base de datos mediante inyección de dependencias
-        public BrandService(StoreContext storeContext)
+        // Constructor que recibe el repositorio de marcas mediante inyección de dependencias
+        public BrandService(IBrandRepository<Brand> brandRepository)
         {
-            _storeContext = storeContext;
+            _brandRepository = brandRepository;
         }
 
         public async Task<IEnumerable<BrandDto>> GetAllBrands()
         {
-            // Obtiene todas las marcas de la base de datos y proyecta los resultados en BrandDto
-            var brands = await _storeContext.Brands
-                .Select(x => new BrandDto
-                {
-                    BrandId = x.BrandId,
-                    Name = x.Name,
-                    Description = x.Description
-                })
-                .ToListAsync();
+            // Obtiene todas las marcas a través del repositorio y proyecta los resultados en BrandDto
+            var brands = await _brandRepository.GetAllBrands();
+            var brandDtos = MapBrandsToDtos(brands);
 
             // Retorna la lista de BrandDto
-            return brands;
+            return brandDtos;
         }
 
         public async Task<BrandDto?> GetBrandById(long id)
         {
-            // Busca la marca en la base de datos por su ID
-            var brand = await _storeContext.Brands.FindAsync(id);
+            // Obtiene la marca por su ID a través del repositorio
+            var brand = await _brandRepository.GetBrandById((int)id);
 
             // Si no se encuentra la marca, retorna null
             if (brand == null)
@@ -47,12 +39,7 @@ namespace Backend.Services
             }
 
             // Retorna un objeto BrandDto basado en la marca encontrada
-            return new BrandDto
-            {
-                BrandId = brand.BrandId,
-                Name = brand.Name,
-                Description = brand.Description
-            };
+            return MapBrandToDto(brand);
         }
 
         public async Task<BrandDto> AddBrand(BrandInsertDto brandInsertDto)
@@ -64,25 +51,17 @@ namespace Backend.Services
                 Description = brandInsertDto.Description
             };
 
-            // Agrega la nueva marca al contexto de la base de datos
-            await _storeContext.Brands.AddAsync(brand);
-
-            // Guarda los cambios en la base de datos
-            await _storeContext.SaveChangesAsync();
+            // Agrega la nueva marca a través del repositorio
+            var addedBrand = await _brandRepository.Add(brand);
 
             // Retorna un objeto BrandDto basado en la nueva marca creada
-            return new BrandDto
-            {
-                BrandId = brand.BrandId,
-                Name = brand.Name,
-                Description = brand.Description
-            };
+            return MapBrandToDto(addedBrand);
         }
 
         public async Task<IActionResult> UpdateBrand(long id, BrandUpdateDto brandUpdateDto)
         {
-            // Busca la marca en la base de datos por su ID
-            var brand = await _storeContext.Brands.FindAsync(id);
+            // Obtiene la marca por su ID a través del repositorio
+            var brand = await _brandRepository.GetBrandById((int)id);
 
             // Si no se encuentra la marca, retorna un resultado NotFound
             if (brand == null)
@@ -94,11 +73,28 @@ namespace Backend.Services
             brand.Name = brandUpdateDto.Name;
             brand.Description = brandUpdateDto.Description;
 
-            // Guarda los cambios en la base de datos
-            await _storeContext.SaveChangesAsync();
+            // Actualiza la marca a través del repositorio
+            await _brandRepository.Update((int)id, brand);
 
             // Retorna un resultado NoContent indicando que la actualización fue exitosa
             return new NoContentResult();
+        }
+
+        // Método auxiliar para mapear una colección de marcas a BrandDto
+        private IEnumerable<BrandDto> MapBrandsToDtos(IEnumerable<Brand> brands)
+        {
+            return brands.Select(brand => MapBrandToDto(brand));
+        }
+
+        // Método auxiliar para mapear una marca a BrandDto
+        private BrandDto MapBrandToDto(Brand brand)
+        {
+            return new BrandDto
+            {
+                BrandId = brand.BrandId,
+                Name = brand.Name,
+                Description = brand.Description
+            };
         }
     }
 }
