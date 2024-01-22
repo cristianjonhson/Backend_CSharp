@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuraci�n de la aplicaci�n
+// Configuracion de la aplicacion
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 //Repository
