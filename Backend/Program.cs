@@ -7,9 +7,6 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuracion de la aplicacion
-builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-
 //Repository
 
 // Registra el repositorio de cervezas como implementacion de IBeerRepository
@@ -28,7 +25,7 @@ builder.Services.AddDbContext<StoreContext>(options =>
 builder.Services.AddScoped<IBrandService, BrandService>();
 
 // Registra el servicio de cervezas como implementacion de ICommonService
-builder.Services.AddKeyedScoped<ICommonService<BeerDto,BeerInsertDto,BeerUpdateDto>, BeerService>("beerService");
+builder.Services.AddKeyedScoped<ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>, BeerService>("beerService");
 
 // Agrega servicios al contenedor de dependencias.
 builder.Services.AddControllers();
