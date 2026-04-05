@@ -5,98 +5,433 @@
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "15090833"
 	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5085"
+		}
+	],
 	"item": [
 		{
-			"name": "https://localhost:7055/api/Operation?a=14&b=12",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "https://localhost:7055/api/Operation?a=14&b=12",
-					"protocol": "https",
-					"host": [
-						"localhost"
-					],
-					"port": "7055",
-					"path": [
-						"api",
-						"Operation"
-					],
-					"query": [
-						{
-							"key": "a",
-							"value": "14"
+			"name": "Beer",
+			"item": [
+				{
+					"name": "Get all beers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Beer",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Beer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get beer by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Beer/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Beer",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create beer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"beerName\": \"IPA de Prueba\",\n  \"beerDescription\": \"Cerveza para test local\",\n  \"beerType\": \"IPA\",\n  \"alcohol\": 6.5,\n  \"brandId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
-						{
-							"key": "b",
-							"value": "12"
+						"url": {
+							"raw": "{{baseUrl}}/api/Beer",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Beer"
+							]
 						}
-					]
+					},
+					"response": []
+				},
+				{
+					"name": "Update beer",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"beerName\": \"IPA Actualizada\",\n  \"beerDescription\": \"Descripcion actualizada\",\n  \"beerType\": \"IPA\",\n  \"alcohol\": 7.0,\n  \"brandId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Beer/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Beer",
+								"1"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Controller por Objeto (Class)",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n   \"A\": 50,\r\n   \"B\": 30 \r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+			"name": "Brand",
+			"item": [
+				{
+					"name": "Get all brands",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Brand",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Brand"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "https://localhost:7055/api/Operation",
-					"protocol": "https",
-					"host": [
-						"localhost"
-					],
-					"port": "7055",
-					"path": [
-						"api",
-						"Operation"
-					]
+				{
+					"name": "Get brand by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Brand/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Brand",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create brand",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Marca Demo\",\n  \"description\": \"Marca creada desde Postman\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Brand",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Brand"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update brand",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Marca Demo Actualizada\",\n  \"description\": \"Descripcion actualizada\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Brand/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Brand",
+								"1"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Controller usando Repository Ejemplo",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n   \"A\": 50,\r\n   \"B\": 30 \r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+			"name": "Posts",
+			"item": [
+				{
+					"name": "Get posts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Posts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Posts"
+							]
 						}
-					}
-				},
-				"url": {
-					"raw": "https://localhost:7055/api/People/all",
-					"protocol": "https",
-					"host": [
-						"localhost"
-					],
-					"port": "7055",
-					"path": [
-						"api",
-						"People",
-						"all"
-					]
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
+		},
+		{
+			"name": "People",
+			"item": [
+				{
+					"name": "Get all people",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/People/all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"People",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get people by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/People/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"People",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search people",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/People/search/cris",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"People",
+								"search",
+								"cris"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Operation",
+			"item": [
+				{
+					"name": "Suma (GET)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Operation?a=10&b=2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Operation"
+							],
+							"query": [
+								{
+									"key": "a",
+									"value": "10"
+								},
+								{
+									"key": "b",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Resta (POST)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"a\": 50,\n  \"b\": 30\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Operation",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Operation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Multiplicacion (PUT)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Operation?a=10&b=2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Operation"
+							],
+							"query": [
+								{
+									"key": "a",
+									"value": "10"
+								},
+								{
+									"key": "b",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Division (DELETE)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Operation?a=14&b=12",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Operation"
+							],
+							"query": [
+								{
+									"key": "a",
+									"value": "14"
+								},
+								{
+									"key": "b",
+									"value": "12"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
