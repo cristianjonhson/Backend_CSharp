@@ -59,7 +59,8 @@ Estructura dentro de Backend:
 ## Requisitos previos
 
 - SDK de .NET 8 instalado.
-- SQL Server disponible (local o remoto).
+- Docker Desktop (recomendado para macOS).
+- SQL Server disponible (local o remoto) si no usas Docker.
 - (Opcional) herramienta EF Core CLI:
 
 ```bash
@@ -75,6 +76,16 @@ dotnet ef --version
 
 ## Configuracion
 
+### 0) Levantar SQL Server con Docker (recomendado en macOS)
+
+Desde la raiz del repositorio:
+
+```bash
+docker compose up -d
+```
+
+Esto usa [docker-compose.yml](docker-compose.yml) y expone SQL Server en `localhost:1433`.
+
 ### 1) Cadena de conexion
 
 Configura la cadena en [Backend/appsettings.json](Backend/appsettings.json) dentro de ConnectionStrings -> StoreConnection.
@@ -82,7 +93,7 @@ Configura la cadena en [Backend/appsettings.json](Backend/appsettings.json) dent
 Ejemplo actual del proyecto:
 
 ```json
-"StoreConnection": "Server=localhost\\SQLEXPRESS;Database=STORE;Trusted_Connection=True; Trust Server Certificate=True;"
+"StoreConnection": "Server=localhost,1433;Database=STORE;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;Encrypt=False;"
 ```
 
 Si usas autenticacion SQL, ajusta usuario y password segun tu entorno.
@@ -117,6 +128,22 @@ Aplicar migraciones existentes:
 
 ```bash
 dotnet ef database update --project Backend/Backend.csproj
+```
+
+Si te falla `dotnet ef` con "You must install .NET to run this application" en macOS (caso comun por arquitectura x64/arm64), ejecuta:
+
+```bash
+dotnet tool uninstall --global dotnet-ef
+dotnet tool install --global dotnet-ef
+dotnet ef --version
+```
+
+Si persiste, exporta DOTNET_ROOT y vuelve a cargar la shell:
+
+```bash
+echo 'export DOTNET_ROOT=$(dirname $(dirname $(which dotnet)))' >> ~/.zshrc
+echo 'export PATH=$PATH:$HOME/.dotnet/tools' >> ~/.zshrc
+source ~/.zshrc
 ```
 
 Crear una nueva migracion (si haces cambios en entidades):
