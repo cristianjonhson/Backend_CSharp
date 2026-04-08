@@ -28,7 +28,7 @@ namespace Backend.Repository
         }
 
         // Obtiene una marca por su ID
-        public async Task<Brand?> GetBrandById(int id)
+        public async Task<Brand?> GetBrandById(long id)
         {
             return await _storeContext.Brands.FindAsync(id);
         }
@@ -40,7 +40,7 @@ namespace Backend.Repository
         }
 
         // Actualiza una marca existente por su ID
-        public async Task<IActionResult> Update(int id, Brand entity)
+        public async Task<IActionResult> Update(long id, Brand entity)
         {
             var existingBrand = await _storeContext.Brands.FindAsync(id);
 
