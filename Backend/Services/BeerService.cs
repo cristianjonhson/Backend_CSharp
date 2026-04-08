@@ -22,7 +22,7 @@ public class BeerService : ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>
             BeerType = b.BeerType,
             BeerDescription = b.BeerDescription,
             Alcohol = b.Alcohol,
-            BrandId = b.Brand?.BrandId
+            BrandId = b.BrandId
         });
     }
 
@@ -39,7 +39,7 @@ public class BeerService : ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>
                 BeerType = beer.BeerType,
                 BeerDescription = beer.BeerDescription,
                 Alcohol = beer.Alcohol,
-                BrandId = beer.Brand?.BrandId
+                BrandId = beer.BrandId
             };
             return beerDto;
         }
@@ -67,13 +67,13 @@ public class BeerService : ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>
             BeerType = beer.BeerType,
             BeerDescription = beer.BeerDescription,
             Alcohol = beer.Alcohol,
-            BrandId = beer.Brand?.BrandId
+            BrandId = beer.BrandId
         };
 
         return beerDto;
     }
 
-    public async Task<BeerDto> Update(int id, BeerUpdateDto beerUpdateDto)
+    public async Task<BeerDto?> Update(int id, BeerUpdateDto beerUpdateDto)
     {
         var beerEntity = await _beerRepository.GetById(id);
 
@@ -98,7 +98,7 @@ public class BeerService : ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>
                 BeerType = beerEntity.BeerType,
                 BeerDescription = beerEntity.BeerDescription,
                 Alcohol = beerEntity.Alcohol,
-                BrandId = beerEntity.Brand?.BrandId
+                BrandId = beerEntity.BrandId
             };
 
             return beerDto;

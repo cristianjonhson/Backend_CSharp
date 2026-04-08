@@ -2,7 +2,6 @@
 using Backend.DTOs;
 using FluentValidation;
 using Microsoft.Data.SqlClient;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -94,17 +93,11 @@ public class BeerController : ControllerBase
         // Delega la responsabilidad al servicio de cervezas.
         var result = await _beerService.Update(id, beerUpdateDto);
 
-        if (result is NoContentResult)
+        if (result == null)
         {
-            return new NoContentResult();
+            return NotFound();
         }
-        else if (result is NotFoundResult)
-        {
-            return new NotFoundResult();
-        }
-        else
-        {
-            return Ok(result);
-        }
+
+        return Ok(result);
     }
 }

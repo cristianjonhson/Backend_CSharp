@@ -1,7 +1,7 @@
 ﻿// Interfaz genérica que especifica operaciones comunes CRUD para cualquier entidad.
 using Microsoft.AspNetCore.Mvc;
 
-public interface ICommonService<T,TI,TU>
+public interface ICommonService<T, TI, TU>
 {
     // Obtener todos los elementos de la entidad.
     Task<IEnumerable<T>> Get();
@@ -13,5 +13,5 @@ public interface ICommonService<T,TI,TU>
     Task<T> Add(TI entityInsertDto);
 
     // Actualizar un elemento de la entidad por su ID.
-    Task<T> Update(int id, TU entityUpdateDto);
+    Task<T?> Update(int id, TU entityUpdateDto);
 }
