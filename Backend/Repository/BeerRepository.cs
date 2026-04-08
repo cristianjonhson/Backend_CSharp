@@ -34,24 +34,9 @@ public class BeerRepository : IBeerRepository<Beer>
         await _storeContext.SaveChangesAsync();
     }
 
-    public async Task<IActionResult> Update(int id, Beer entity)
+    public void Update(Beer entity)
     {
-        var existingBeer = await _storeContext.Beers.FindAsync(id);
-
-        if (existingBeer == null)
-        {
-            return new NotFoundResult();
-        }
-
-        // Actualiza las propiedades de la cerveza con los datos de la entidad
-        existingBeer.BeerName = entity.BeerName;
-        existingBeer.BeerDescription = entity.BeerDescription;
-        existingBeer.BeerType = entity.BeerType;
-        existingBeer.Alcohol = entity.Alcohol;
-        existingBeer.Brand = entity.Brand;
-
-        await _storeContext.SaveChangesAsync();
-
-        return new NoContentResult();
+         _storeContext.Beers.Attach(entity);
+        _storeContext.Beers.Entry(entity).State = EntityState.Modified;
     }
 }

@@ -5,75 +5,98 @@ using Microsoft.AspNetCore.Mvc;
 
 public class BeerService : ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>
 {
-    private readonly IBeerRepository _beerRepository;
+    private IBeerRepository<Beer> _beerRepository;
 
-    public BeerService(IBeerRepository beerRepository)
+    public BeerService(IBeerRepository<Beer> beerRepository)
     {
         _beerRepository = beerRepository;
     }
 
     public async Task<IEnumerable<BeerDto>> Get()
-    {
-        var beerEntities = await _beerRepository.GetAll();
-        return beerEntities.Select(MapToDto);
+    { 
+        var beers = await _beerRepository.GetAll();
+        return beers.Select(b => new BeerDto()
+        {
+            BeerId = b.BeerId,
+            BeerName = b.BeerName,
+            BeerType = b.BeerType,
+            BeerDescription = b.BeerDescription,
+            Alcohol = b.Alcohol,
+            BrandId = b.Brand?.BrandId
+        }); 
     }
 
-    public async Task<BeerDto> GetById(int id)
+    public async Task<BeerDto?> GetById(int id)
     {
-        var beerEntity = await _beerRepository.GetById(id);
-        return beerEntity != null ? MapToDto(beerEntity) : null;
+        var beer = await _beerRepository.GetById(id);
+
+        if (beer != null) {
+            var beerDto = new BeerDto()
+            {
+                BeerId = beer.BeerId,
+                BeerName = beer.BeerName,
+                BeerType = beer.BeerType,
+                BeerDescription = beer.BeerDescription,
+                Alcohol = beer.Alcohol,
+                BrandId = beer.Brand?.BrandId
+            };
+        return beerDto;
+        }
+        return null;
     }
 
     public async Task<BeerDto> Add(BeerInsertDto beerInsertDto)
     {
-        var beerEntity = MapToEntity(beerInsertDto);
-        await _beerRepository.Add(beerEntity);
-        return MapToDto(beerEntity);
-    }
-
-    public async Task<IActionResult> Update(int id, BeerUpdateDto beerUpdateDto)
-    {
-        var beerEntity = MapToEntity(beerUpdateDto);
-        return await _beerRepository.Update(id, beerEntity);
-    }
-
-    // Método para mapear una entidad Beer a un DTO BeerDto
-    private BeerDto MapToDto(Beer beerEntity)
-    {
-        return new BeerDto
-        {
-            BeerId = beerEntity.BeerId,
-            BeerName = beerEntity.BeerName,
-            BeerDescription = beerEntity.BeerDescription,
-            BeerType = beerEntity.BeerType,
-            Alcohol = beerEntity.Alcohol,
-            BrandId = beerEntity.Brand != null ? beerEntity.Brand.BrandId : 0
-        };
-    }
-
-    // Método para mapear un DTO BeerInsertDto a una entidad Beer
-    private Beer MapToEntity(BeerInsertDto beerInsertDto)
-    {
-        return new Beer
+        var beer = new Beer()
         {
             BeerName = beerInsertDto.BeerName,
             BeerDescription = beerInsertDto.BeerDescription,
             BeerType = beerInsertDto.BeerType,
             Alcohol = beerInsertDto.Alcohol,
-            Brand = beerInsertDto.BrandId // Puedes validar o manejar la marca según tus necesidades
         };
+
+        await _beerRepository.Add(beer);
+        await _beerRepository.Save();
+
+        var beerDto = new BeerDto()
+        {
+            BeerId = beer.BeerId,
+            BeerName = beer.BeerName,
+            BeerType = beer.BeerType,
+            BeerDescription = beer.BeerDescription,
+            Alcohol = beer.Alcohol,
+            BrandId = beer.Brand?.BrandId
+        };
+
+        return beerDto;
     }
 
-    // Método para mapear un DTO BeerUpdateDto a una entidad Beer
-    private Beer MapToEntity(BeerUpdateDto beerUpdateDto)
+    public async Task<BeerDto> Update(int id, BeerUpdateDto beerUpdateDto)
     {
-        return new Beer
+        var beerEntity = await _beerRepository.GetById(id);
+
+        if (beerEntity != null)
         {
-            BeerName = beerUpdateDto.BeerName ?? string.Empty,
-            BeerDescription = beerUpdateDto.BeerDescription ?? string.Empty,
-            BeerType = beerUpdateDto.BeerType ?? string.Empty,
-            Alcohol = beerUpdateDto.Alcohol,
-            BrandId = beerUpdateDto.BrandId // Puedes validar o manejar la marca según tus necesidades
-        };
+            beerEntity.BeerName = beerUpdateDto.BeerName;
+            beerEntity.BeerDescription = beerUpdateDto.BeerDescription;
+            beerEntity.BeerType = beerUpdateDto.BeerType;
+            beerEntity.Alcohol = beerUpdateDto.Alcohol;
+
+            _beerRepository.Update(beerEntity);
+            await _beerRepository.Save();
+
+            var beerDto = new BeerDto()
+            {
+                BeerId = beerEntity.BeerId,
+                BeerName = beerEntity.BeerName,
+                BeerType = beerEntity.BeerType,
+                BeerDescription = beerEntity.BeerDescription,
+                Alcohol = beerEntity.Alcohol,
+                BrandId = beerEntity.Brand?.BrandId
+            };
+
+            return beerDto;
+        }
+        return null;
     }
 }

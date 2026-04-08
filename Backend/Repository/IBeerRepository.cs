@@ -12,11 +12,9 @@ namespace Backend.Repository
         Task<TEntity> Add(TEntity entity);
 
         // Actualizar un elemento de la entidad por su ID.
-        Task<IActionResult> Update(int id, TEntity entity);
+        void Update(TEntity entity);
 
         Task Save();
     }
-
-
 }
-}
+

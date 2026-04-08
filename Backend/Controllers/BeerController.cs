@@ -1,6 +1,7 @@
 ﻿// Controlador para las operaciones relacionadas con las cervezas.
 using Backend.DTOs;
 using FluentValidation;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/[controller]")]
@@ -74,7 +75,17 @@ public class BeerController : ControllerBase
         // Delega la responsabilidad al servicio de cervezas.
         var result = await _beerService.Update(id, beerUpdateDto);
 
-        // Retorna el resultado proporcionado por el servicio.
-        return (IActionResult)result;
+        if (result is NoContentResult)
+        {
+            return new NoContentResult();
+        }
+        else if (result is NotFoundResult)
+        {
+            return new NotFoundResult();
+        }
+        else
+        {
+            return Ok(result);
+        }
     }
 }
