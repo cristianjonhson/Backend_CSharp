@@ -1,14 +1,16 @@
 ﻿// Controlador para las operaciones relacionadas con las cervezas.
 using Backend.DTOs;
 using FluentValidation;
+using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 [Route("api/[controller]")]
 [ApiController]
 public class BeerController : ControllerBase
 {
-    private readonly ICommonService<BeerDto,BeerInsertDto,BeerUpdateDto> _beerService;
+    private readonly ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto> _beerService;
     private readonly IValidator<BeerInsertDto> _beerInsertValidator;
 
     // Constructor que recibe servicios mediante inyección de dependencias.
@@ -61,11 +63,28 @@ public class BeerController : ControllerBase
             return BadRequest(validatorResult.Errors);
         }
 
-        // Delega la responsabilidad al servicio de cervezas.
-        var result = await _beerService.Add(beerInsertDto);
+        try
+        {
+            // Delega la responsabilidad al servicio de cervezas.
+            var result = await _beerService.Add(beerInsertDto);
 
-        // Retorna un resultado CreatedAtAction con el objeto BeerDto y la ruta del método GetById.
-        return CreatedAtAction(nameof(GetById), new { id = result.BeerId }, result);
+            // Retorna un resultado CreatedAtAction con el objeto BeerDto y la ruta del método GetById.
+            return CreatedAtAction(nameof(GetById), new { id = result.BeerId }, result);
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is SqlException sqlEx)
+        {
+            if (sqlEx.Number == 515)
+            {
+                return BadRequest(new { message = "No se pudo crear la cerveza porque faltan campos obligatorios en la base de datos." });
+            }
+
+            if (sqlEx.Number == 547)
+            {
+                return BadRequest(new { message = "No se pudo crear la cerveza porque la marca enviada no existe." });
+            }
+
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Error al guardar la cerveza en la base de datos." });
+        }
     }
 
     // Acción HTTP PUT para actualizar una cerveza por su ID.
