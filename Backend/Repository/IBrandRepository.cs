@@ -7,11 +7,11 @@ namespace Backend.Repository
     {
         Task<IEnumerable<T>> GetAllBrands();
 
-        Task<T?> GetBrandById(int id);
+        Task<T?> GetBrandById(long id);
 
         Task<T> Add(T entity);
 
-        Task<IActionResult> Update(int id, T entity);
+        Task<IActionResult> Update(long id, T entity);
 
         Task Save();
     }
