@@ -30,7 +30,7 @@ namespace Backend.Services
         public async Task<BrandDto?> GetBrandById(long id)
         {
             // Obtiene la marca por su ID a través del repositorio
-            var brand = await _brandRepository.GetBrandById((int)id);
+            var brand = await _brandRepository.GetBrandById(id);
 
             // Si no se encuentra la marca, retorna null
             if (brand == null)
@@ -61,7 +61,7 @@ namespace Backend.Services
         public async Task<IActionResult> UpdateBrand(long id, BrandUpdateDto brandUpdateDto)
         {
             // Obtiene la marca por su ID a través del repositorio
-            var brand = await _brandRepository.GetBrandById((int)id);
+            var brand = await _brandRepository.GetBrandById(id);
 
             // Si no se encuentra la marca, retorna un resultado NotFound
             if (brand == null)
@@ -74,7 +74,7 @@ namespace Backend.Services
             brand.Description = brandUpdateDto.Description;
 
             // Actualiza la marca a través del repositorio
-            await _brandRepository.Update((int)id, brand);
+            await _brandRepository.Update(id, brand);
 
             // Retorna un resultado NoContent indicando que la actualización fue exitosa
             return new NoContentResult();
