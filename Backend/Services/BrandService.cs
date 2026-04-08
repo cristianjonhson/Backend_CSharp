@@ -60,24 +60,15 @@ namespace Backend.Services
 
         public async Task<IActionResult> UpdateBrand(long id, BrandUpdateDto brandUpdateDto)
         {
-            // Obtiene la marca por su ID a través del repositorio
-            var brand = await _brandRepository.GetBrandById(id);
-
-            // Si no se encuentra la marca, retorna un resultado NotFound
-            if (brand == null)
+            var brandToUpdate = new Brand
             {
-                return new NotFoundResult();
-            }
+                BrandId = id,
+                Name = brandUpdateDto.Name,
+                Description = brandUpdateDto.Description
+            };
 
-            // Actualiza los datos de la marca con los proporcionados en el DTO
-            brand.Name = brandUpdateDto.Name;
-            brand.Description = brandUpdateDto.Description;
-
-            // Actualiza la marca a través del repositorio
-            await _brandRepository.Update(id, brand);
-
-            // Retorna un resultado NoContent indicando que la actualización fue exitosa
-            return new NoContentResult();
+            // Retorna el resultado real del repositorio (NotFound o NoContent).
+            return await _brandRepository.Update(id, brandToUpdate);
         }
 
         // Método auxiliar para mapear una colección de marcas a BrandDto
