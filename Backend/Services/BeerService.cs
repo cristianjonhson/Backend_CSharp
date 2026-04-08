@@ -13,7 +13,7 @@ public class BeerService : ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>
     }
 
     public async Task<IEnumerable<BeerDto>> Get()
-    { 
+    {
         var beers = await _beerRepository.GetAll();
         return beers.Select(b => new BeerDto()
         {
@@ -23,14 +23,15 @@ public class BeerService : ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>
             BeerDescription = b.BeerDescription,
             Alcohol = b.Alcohol,
             BrandId = b.Brand?.BrandId
-        }); 
+        });
     }
 
     public async Task<BeerDto?> GetById(int id)
     {
         var beer = await _beerRepository.GetById(id);
 
-        if (beer != null) {
+        if (beer != null)
+        {
             var beerDto = new BeerDto()
             {
                 BeerId = beer.BeerId,
@@ -40,7 +41,7 @@ public class BeerService : ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>
                 Alcohol = beer.Alcohol,
                 BrandId = beer.Brand?.BrandId
             };
-        return beerDto;
+            return beerDto;
         }
         return null;
     }
@@ -53,6 +54,7 @@ public class BeerService : ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>
             BeerDescription = beerInsertDto.BeerDescription,
             BeerType = beerInsertDto.BeerType,
             Alcohol = beerInsertDto.Alcohol,
+            BrandId = beerInsertDto.BrandId!.Value,
         };
 
         await _beerRepository.Add(beer);
@@ -81,6 +83,10 @@ public class BeerService : ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>
             beerEntity.BeerDescription = beerUpdateDto.BeerDescription;
             beerEntity.BeerType = beerUpdateDto.BeerType;
             beerEntity.Alcohol = beerUpdateDto.Alcohol;
+            if (beerUpdateDto.BrandId.HasValue)
+            {
+                beerEntity.BrandId = beerUpdateDto.BrandId.Value;
+            }
 
             _beerRepository.Update(beerEntity);
             await _beerRepository.Save();
